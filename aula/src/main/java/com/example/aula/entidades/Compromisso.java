@@ -1,6 +1,6 @@
 package com.example.aula.entidades;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Time;
 
 import jakarta.persistence.Column;

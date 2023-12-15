@@ -2,11 +2,11 @@ package com.example.aula.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,22 +18,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.aula.entidades.Contato;
 import com.example.aula.repositories.ContatoRepository;
+import com.example.aula.services.ContatoService;
 
 @RestController
-@RequestMapping("/contatos")
+@RequestMapping("/contatos") /*http://localhost:8080*/
+@CrossOrigin
 public class ContatoController {
 	List<Contato> contatos = new ArrayList<>();
 	
 	@Autowired
 	ContatoRepository repo;
 	
+	@Autowired
+	ContatoService service;
+	
 	@PostMapping
 	public ResponseEntity<Contato> salvar(@RequestBody Contato contato) {
 		/*contato.setId(contatos.size()+1l);
 		contatos.add(contato);*/
-		repo.save(contato);
-		return ResponseEntity.status(HttpStatus.CREATED).body(contato);
+		/*repo.save(contato);
+		return ResponseEntity.status(HttpStatus.CREATED).body(contato);*/
+		return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(contato));
 	}
+	
 	@PutMapping("/{idcontato}")
 	public ResponseEntity<Object> alterar(@PathVariable("idcontato") Long idcontato,
 			@RequestBody Contato contato) {
@@ -47,7 +54,7 @@ public class ContatoController {
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");	
 		*/
-		Optional<Contato> opt = repo.findById(idcontato);
+		/*Optional<Contato> opt = repo.findById(idcontato);
 		try {
 		    Contato ct = opt.get();
 		    ct.setNome(contato.getNome());	
@@ -58,9 +65,35 @@ public class ContatoController {
 		}
 		catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");
-		}	
+		}*/	
+		return ResponseEntity.status(HttpStatus.OK).body(service.alterar(idcontato, contato));
+
 	}
-		
+	
+	@DeleteMapping("/{idcontato}")
+	public ResponseEntity<Object> excluir(@PathVariable("idcontato") Long idcontato) {
+		/*for(Contato ct : contatos) {
+			if(ct.getId() == idcontato) {
+			  contatos.remove(ct);
+			  return ResponseEntity.status(HttpStatus.NO_CONTENT).build();				
+			}
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");	
+		*/
+		/*Optional<Contato> opt = repo.findById(idcontato);
+		try {
+		    Contato ct = opt.get();
+		    repo.delete(ct);
+		    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");
+		}	*/
+		service.excluir(idcontato);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+	}
+	
 	/*@GetMapping
 	public List<Contato> consultar() {
 		return contatos;
@@ -69,45 +102,26 @@ public class ContatoController {
 	public ResponseEntity<List<Contato>> consultar() {
 		return ResponseEntity.status(HttpStatus.OK).body(repo.findAll());
 	}
-	
+	/*@GetMapping("/email")
+	public ResponseEntity<List<Contato>> getByEmail(@RequestParam("email") String email) {
+		return ResponseEntity.status(HttpStatus.OK).body(repo.findByEmail(email));
+
+	}*/
 	@GetMapping("/{idcontato}")
 	public ResponseEntity<Object> consultar(@PathVariable("idcontato") Long idcontato) {
 		/*for(Contato contato : contatos) {
 			if(contato.getId() == idcontato) {
-				return ResponseEntity.status(HttpStatus.OK).body(contato);
-
+				return ResponseEntity.status(HttpStatus.OK).body(contato);				
 			}
 		}*/
-		Optional<Contato> opt = repo.findById(idcontato);
+		/*Optional<Contato> opt = repo.findById(idcontato);
 		try {
-			Contato ct = opt.get();
-			return ResponseEntity.status(HttpStatus.OK).body(ct);		
-
+		    Contato ct = opt.get();
+		    return ResponseEntity.status(HttpStatus.OK).body(ct);
 		}
-		catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não encontrado");		
-		}
+		catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");
+		}	*/
+		return ResponseEntity.status(HttpStatus.OK).body(service.consultar(idcontato));
 	}
-	@DeleteMapping("/{idcontato}")
-	public ResponseEntity<Object> delete(@PathVariable("idcontato") Long idcontato){
-		/*for(Contato ct : contatos) {
-			if(ct.getId() == idcontato) {
-				contatos.remove(ct);
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-			}
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");
-*/
-		Optional<Contato> opt = repo.findById(idcontato);
-		try {
-			Contato ct = opt.get();
-			repo.delete(ct);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();		
-
-		}
-		catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não encontrado");		
-		}
-	}
-
 }

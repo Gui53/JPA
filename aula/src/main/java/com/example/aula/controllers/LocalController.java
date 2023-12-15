@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.aula.entidades.Contato;
 import com.example.aula.entidades.Local;
 import com.example.aula.repositories.LocalRepository;
+import com.example.aula.services.LocalService;
 
 @RestController
 @RequestMapping("/local") //http://localhost:8080/
@@ -28,6 +29,9 @@ public class LocalController {
 	@Autowired
 	LocalRepository repo;
 	
+	@Autowired
+	LocalService service;
+	
 	@PostMapping
 	public ResponseEntity<Local> salvar(@RequestBody Local local) {
 		repo.save(local);
@@ -35,36 +39,15 @@ public class LocalController {
 	}
 	@PutMapping("/{idlocal}")
 	public ResponseEntity<Object> alterar(@PathVariable("idlocal") Long idlocal, @RequestBody Local local){
-		Optional<Local> opt = repo.findById(idlocal);
-		try {
-		    Local lc = opt.get();
-		    lc.setNome(local.getNome());	
-			lc.setRua(local.getRua());
-			lc.setNum(local.getNum());
-			lc.setBairro(local.getBairro());
-			lc.setCidade(local.getCidade());
-			lc.setUf(local.getUf());
-			lc.setCep(local.getCep());
-		    repo.save(lc);
-		    return ResponseEntity.status(HttpStatus.OK).body(lc);
-		}
-		catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Local não encontrado");
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(service.alterar(idlocal, local));
+
 	}
 	
 	@DeleteMapping("/{idlocal}")
-	public ResponseEntity<Object> delete(@PathVariable("idlocal") Long idlocal){
-		Optional<Local> opt = repo.findById(idlocal);
-		try {
-			Local lc = opt.get();
-			repo.delete(lc);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();		
+	public ResponseEntity<Object> delete(Long idlocal){
+		service.excluir(idlocal);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-		}
-		catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não encontrado");		
-		}
 	}
 	@GetMapping
 	public ResponseEntity<List<Local>> consultar() {
