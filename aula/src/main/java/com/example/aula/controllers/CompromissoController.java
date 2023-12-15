@@ -90,15 +90,4 @@ public class CompromissoController {
 		}
 	}
 	
-	@GetMapping("/ct/{contato_id}")
-	public ResponseEntity<Object> consultarCt(@PathVariable("contato_id") Long contato_id) {
-
-		Optional<Compromisso> opt = repo.findById(contato_id);
-		try {
-			Compromisso comp = opt.get();
-			return ResponseEntity.status(HttpStatus.OK).body(comp);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contato não encontrado");
-		}
-	}
 }
